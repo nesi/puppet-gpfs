@@ -66,9 +66,8 @@ class gpfs(
   #   require   => Package['gpfs.base'],
   # }
 
-  $update_version = $update_source =~ /gpfs\.base-(.*)\..*\.update/ ? {
-    true  => $1,
-    false => undef,
+  if $update_source =~ /gpfs\.base-(.*)\..*\.update/ {
+    $update_version  => $1
   }
 
   exec {'gpfs.update':
