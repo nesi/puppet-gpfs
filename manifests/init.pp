@@ -28,10 +28,10 @@
 
 # [Remember: No empty lines between comments and class definition]
 class gpfs(
-  kernel_version = $::kernelrelease,
-  base_source,
-  update_source,
-  ports_source,
+  $kernel_version = $::kernelrelease,
+  $base_source,
+  $update_source,
+  $ports_source
 ){
 
   $gpfs_deps = ['compat-libstdc++-33','libstdc++','rsh','ksh']
