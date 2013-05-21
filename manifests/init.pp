@@ -27,7 +27,61 @@
 #     along with the gpfs Puppet module.  If not, see <http://www.gnu.org/licenses/>.
 
 # [Remember: No empty lines between comments and class definition]
-class gpfs {
+class gpfs(
+  kernel_version = $::kernelrelease,
+  base_source,
+  update_source,
+  ports_source,
+){
 
+  $gpfs_deps = ['compat-libstdc++-33','libstdc++','rsh','ksh']
+
+  package {$gpfs_deps:
+    ensure  => installed
+  }
+
+  package {"kernel-${kernel_version}":
+    ensure => installed,
+    notify => Notify['gpfs-kernel-update']
+  }
+
+  notify {'gpfs-kernel-update':
+    message => "The kernel on $::fqdn has been updated, the system may require rebooting.",
+  }
+
+  package {"gpfs.base":
+    provider  => 'rpm',
+    ensure    => installed,
+    source    => $base_source,
+    require   => [Package[$gpfs_deps]],
+  }
+
+  # The gpfs.update package conflicts with the gpfs.base package
+  # and has to be installed with rpm -Uvh, which the package resource
+  # does not (yet) support.
+  # package {"gpfs.update":
+  #   provider  => 'rpm',
+  #   ensure    => latest,
+  #   source    => '/mnt/xcat/install/post/software/GPFS/fixes/gpfs.base-3.4.0-15.x86_64.update.rpm',
+  #   require   => Package['gpfs.base'],
+  # }
+
+  $update_version = $update_source =~ /gpfs\.base-(.*)\..*\.update/ ? {
+    true  => $1,
+    false => undef,
+  }
+
+  exec {'gpfs.update':
+    command => "/bin/rpm -Uvh ${update_source}",
+    unless  => "/bin/rpm -qa gpfs.base | grep ${update_version}",
+    require => [Package["gpfs.base"],Mount['/mnt/xcat/install']],
+  }
+
+  package {"gpfs.port":
+    provider  => 'rpm',
+    ensure    => installed,
+    source    => $ports_source,
+    require   => Exec['gpfs.update'],
+  }
 
 }
