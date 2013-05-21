@@ -1,12 +1,20 @@
-# blank
+# GPFS
 
-This is a blank puppet module.
+This is a GPFS puppet module to install and configure the General Parallel File System (GPFS) from IBM.
 
-*NOTE:* Check README1st.markdown for usage of the blank puppet module template.
+# Prerequisites
+
+Licenses to use GPFS will be required from IBM, as well as the install package (`gpfs.base`) and updates (`gpfs.base*update.rpm`) from which a kernal ports package (`gpfs.ports`) will need to be compiled for the specific kernel being used on your systems.
+
+This module can then be used to distribute and install these packages over many Puppet managed servers.
+
+# References
+
+* [GPFS Official Homepage](http://www-03.ibm.com/systems/software/gpfs/)
 
 # Licensing
 
-Update your license details here.
+GPFS is only available under licence from IBM. This module does not grant a license to use GPFS.
 
 # Attribution
 
