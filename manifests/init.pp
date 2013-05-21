@@ -67,7 +67,7 @@ class gpfs(
   # }
 
   if $update_source =~ /gpfs\.base-(.*)\..*\.update/ {
-    $update_version  => $1
+    $update_version  = $1
   }
 
   exec {'gpfs.update':
