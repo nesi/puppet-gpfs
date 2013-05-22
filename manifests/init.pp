@@ -42,11 +42,11 @@ class gpfs(
 
   package {"kernel-${kernel_version}":
     ensure => installed,
-    notify => Notify['gpfs-kernel-update']
   }
 
   notify {'gpfs-kernel-update':
     message => "The kernel on $::fqdn has been updated, the system may require rebooting.",
+    subscribe => Package["kernel-${kernel_version}"],
   }
 
   package {"gpfs.base":
@@ -76,7 +76,11 @@ class gpfs(
     require => Package['gpfs.base'],
   }
 
-  package {"gpfs.gplbin":
+  if $ports_source =~ /(gpfs.gplbin-.*)\.rpm/ {
+    $port_package = $1
+  }
+
+  package {$port_package:
     provider  => 'rpm',
     ensure    => installed,
     source    => $ports_source,
