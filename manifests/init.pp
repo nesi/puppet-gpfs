@@ -76,7 +76,7 @@ class gpfs(
     require => Package['gpfs.base'],
   }
 
-  package {"gpfs.port":
+  package {"gpfs.gplbin":
     provider  => 'rpm',
     ensure    => installed,
     source    => $ports_source,
