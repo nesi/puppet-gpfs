@@ -44,11 +44,6 @@ class gpfs(
     ensure => installed,
   }
 
-  notify {'gpfs-kernel-update':
-    message => "The kernel on $::fqdn has been updated, the system may require rebooting.",
-    subscribe => Package["kernel-${kernel_version}"],
-  }
-
   package {"gpfs.base":
     provider  => 'rpm',
     ensure    => installed,
