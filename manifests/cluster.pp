@@ -1,4 +1,4 @@
-define gpfs.cluster(
+define gpfs::cluster(
   $server
 ){
 
