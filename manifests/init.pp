@@ -73,6 +73,7 @@ class gpfs(
   exec {'gpfs.update':
     command => "/bin/rpm -Uvh ${update_source}",
     unless  => "/bin/rpm -qa gpfs.base | grep ${update_version}",
+    require => Package['gpfs.base'],
   }
 
   package {"gpfs.port":
