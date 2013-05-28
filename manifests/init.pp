@@ -71,6 +71,10 @@ class gpfs(
     require => Package['gpfs.base'],
   }
 
+  file{'/etc/profile.d/gpfs_env.sh':
+    content => 'export PATH=$PATH:/usr/lpp/mmfs/bin/'
+  }
+
   if $ports_source =~ /(gpfs.gplbin-.*)\.rpm/ {
     $port_package = $1
   }
