@@ -72,7 +72,8 @@ class gpfs(
   }
 
   file{'/etc/profile.d/gpfs_env.sh':
-    content => 'export PATH=$PATH:/usr/lpp/mmfs/bin/'
+    content => 'export PATH=$PATH:/usr/lpp/mmfs/bin/',
+    require => Exec['gpfs.update']
   }
 
   if $ports_source =~ /(gpfs.gplbin-.*)\.rpm/ {
