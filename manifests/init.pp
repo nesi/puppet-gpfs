@@ -85,11 +85,7 @@ class gpfs(
     require => Exec['gpfs.update']
   }
 
-  if $ports_source =~ /(gpfs.gplbin-.*)\.rpm/ {
-    $port_package = $1
-  }
-
-  package {$port_package:
+  package {'gpfs.gplbin':
     provider  => 'rpm',
     ensure    => installed,
     source    => $ports_source,
