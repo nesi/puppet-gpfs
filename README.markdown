@@ -4,9 +4,46 @@ This is a GPFS puppet module to install and configure the General Parallel File 
 
 # Prerequisites
 
-Licenses to use GPFS will be required from IBM, as well as the install package (`gpfs.base`) and updates (`gpfs.base*update.rpm`) from which a kernal ports package (`gpfs.ports`) will need to be compiled for the specific kernel being used on your systems.
+Licenses to use GPFS will be required from IBM, as well as the install package (`gpfs.base`) and updates (`gpfs.base*update.rpm`) from which a kernel specific package (`gpfs.gplbin`) will need to be compiled for the kernel release being used on your systems.
 
 This module can then be used to distribute and install these packages over many Puppet managed servers.
+
+# Building the binary RPM
+
+This are generic steps to build the binary package for GPFS 3.5.0-18 on RHEL 6.5. YMMV
+
+* Install rpm-build, gcc-c++ (you might need more packages depending on what you install by default)
+* Install GPFS's base RPMs
+* Install GPFS's update RPMs
+* Configure GPFS
+```Shell
+# You might have to pass LINUX_DISTRIBUTION= if your OS version is not recognised (GPFS v3.5.0 needed it for RHEL6)
+make Autoconfig LINUX_DISTRIBUTION=REDHAT_RHEL6
+```
+* Build GPFS
+```Shell
+  make World
+  make rpm
+```
+
+# Usage
+
+Basic usage:
+
+```Puppet
+class { '::gpfs':
+  source_url => '/path/to/gpfs/rpms',
+  version    => '3.5.0',
+  update     => '18',
+}
+```
+
+Will install:
+ * `/path/to/gpfs/rpms/gpfs.base-3.5.0-0.${::architecture}.rpm`
+ * `/path/to/gpfs/rpms/gpfs.base-3.5.0-18.${::architecture}.update.rpm`
+ * `/path/to/gpfs/rpms/gpfs.gplbin-${::kernelrelease}-3.5.0-0.${::architecture}.rpm`
+
+using facts for the kernel release and architecture.
 
 # References
 

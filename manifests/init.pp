@@ -28,27 +28,36 @@
 
 # [Remember: No empty lines between comments and class definition]
 class gpfs(
+  $source_url,
+  $version,
+  $update,
+  $manage_deps = false,
   $kernel_version = $::kernelrelease,
-  $base_source,
-  $update_source,
-  $ports_source
-){
+) {
 
-  $gpfs_deps = ['compat-libstdc++-33','libstdc++','rsh','ksh']
+  $base_source   = "${source_url}/gpfs.base-${version}-0.${::architecture}.rpm"
+  $update_source = "${source_url}/gpfs.base-${version}-${update}.${::architecture}.update.rpm"
+  $ports_source  = "${source_url}/gpfs.gplbin-${kernel_version}-${version}-${update}.${::architecture}.rpm"
 
-  package {$gpfs_deps:
-    ensure  => installed
-  }
+  if $manage_deps {
+    $gpfs_deps = ['compat-libstdc++-33','libstdc++','rsh','ksh']
 
-  package {"kernel-${kernel_version}":
-    ensure => installed,
+    package {$gpfs_deps:
+      ensure  => installed,
+      before  => Package['gpfs.base'],
+    }
+
+
+    package {"kernel-${kernel_version}":
+      ensure => installed,
+      before  => Package['gpfs.base'],
+    }
   }
 
   package {"gpfs.base":
     provider  => 'rpm',
     ensure    => installed,
     source    => $base_source,
-    require   => [Package[$gpfs_deps]],
   }
 
   # The gpfs.update package conflicts with the gpfs.base package
@@ -76,11 +85,7 @@ class gpfs(
     require => Exec['gpfs.update']
   }
 
-  if $ports_source =~ /(gpfs.gplbin-.*)\.rpm/ {
-    $port_package = $1
-  }
-
-  package {$port_package:
+  package {'gpfs.gplbin':
     provider  => 'rpm',
     ensure    => installed,
     source    => $ports_source,

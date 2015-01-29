@@ -4,15 +4,18 @@ describe 'gpfs', :type => :class do
   context "on a RedHat OS" do
     let :facts do
       {
-        :osfamily   => 'RedHat'
+        :osfamily       => 'RedHat',
+        :kernel_release => '2.6.32-431.el6',
+        :architecture   => 'x86_64'
       }
     end
     let(:params){ 
       {
+        :source_url     => "/path/to/gpfs/rpms",
+        :version        => "3.5.0",
+        :update         => "18",
+        :manage_deps    => true,
         :kernel_version => "2.6.32-358.6.1.el6",
-        :base_source    => "/path/to/gpfs.base.rpm",
-        :update_source  => "/path/to/gpfs.base.update.rpm",
-        :ports_source   => "/path/to/gpfs.ports.rpm",
       }
     }
     it { should contain_package("rsh")}
@@ -23,14 +26,14 @@ describe 'gpfs', :type => :class do
     it { should contain_package("gpfs.base").with
       {
         :provider  => 'rpm',
-        :source    => "/path/to/gpfs.base.rpm",
+        :source    => "/path/to/gpfs.base-3.5.0-0.x86_64.rpm",
       }
     }
     it { should contain_exec("gpfs.update") }
-    it { should contain_package("gpfs.port").with
+    it { should contain_package("gpfs.gplbin").with
       {
         :provider  => 'rpm',
-        :source    => "/path/to/gpfs.ports.rpm",
+        :source    => "/path/to/gpfs.gplbin-2.6.32-431.el6.x86_64-3.5.0-18.x86_64.rpm",
       }
     }
   end
